@@ -1,0 +1,9 @@
+{
+  "choices": [
+    {
+      "message": {
+        "content": "{\"is_graphics_related\":true,\"is_rendering_related\":true,\"main_category\":\"real-time rendering\",\"sub_tags\":[\"ReSTIR\",\"path tracing\"],\"technical_keywords\":[\"reservoir\",\"global illumination\"],\"novelty_score\":4,\"job_relevance_score\":5,\"read_priority\":\"must_read\",\"reason\":\"Directly relevant to real-time rendering.\",\"uncertainty\":\"Only title and abstract were available.\"}"
+      }
+    }
+  ]
+}

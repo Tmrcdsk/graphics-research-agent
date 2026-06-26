@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:arxiv="http://arxiv.org/schemas/atom">
+  <title>arXiv Query Results</title>
+  <id>http://arxiv.org/api/query?search_query=cat:cs.GR</id>
+  <updated>2026-06-26T00:00:00Z</updated>
+  <entry>
+    <id>http://arxiv.org/abs/2606.00001v1</id>
+    <updated>2026-06-26T00:00:00Z</updated>
+    <published>2026-06-25T12:30:00Z</published>
+    <title>
+      Reservoir Path Tracing for Real-Time Global Illumination
+    </title>
+    <summary>
+      We present a ReSTIR-style reservoir method for real-time rendering,
+      path tracing, denoising, and global illumination in GPU rendering pipelines.
+    </summary>
+    <author><name>Alice Renderer</name></author>
+    <author><name>Bob Shader</name></author>
+    <arxiv:primary_category term="cs.GR" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.GR" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <link href="http://arxiv.org/abs/2606.00001v1" rel="alternate" type="text/html"/>
+    <link title="pdf" href="http://arxiv.org/pdf/2606.00001v1" rel="related" type="application/pdf"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2606.00002v2</id>
+    <updated>2026-06-26T01:00:00Z</updated>
+    <published>2026-06-24T10:00:00Z</published>
+    <title>Medical CT Reconstruction with Generic Language Model Priors</title>
+    <summary>
+      This paper studies medical CT imaging and document processing with language model priors.
+    </summary>
+    <author><name>Carol Imaging</name></author>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <link href="http://arxiv.org/abs/2606.00002v2" rel="alternate" type="text/html"/>
+    <link title="pdf" href="http://arxiv.org/pdf/2606.00002v2" rel="related" type="application/pdf"/>
+  </entry>
+</feed>
