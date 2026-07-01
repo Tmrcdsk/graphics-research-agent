@@ -2,7 +2,7 @@
 
 ## Project State
 
-Status: MVP implemented; official Unreal/NVIDIA feed extension validated locally
+Status: MVP implemented; official Unreal/NVIDIA feed extension validated locally and in Docker Linux
 
 ## Current Goal
 
@@ -44,7 +44,6 @@ Extend the validated arXiv + DeepSeek + Telegram MVP with official Unreal/Epic a
 - Direct Docker Hub access failed for `python:3.11-slim`; use `PYTHON_IMAGE=docker.m.daocloud.io/library/python:3.11-slim` or another reachable mirror on affected networks.
 - `data/agent.sqlite3` may be created by local or Docker dry-runs. It is ignored by Git and should not be committed.
 - Official website feed URLs can change. Defaults are configurable through `UNREAL_FEED_URL` and `NVIDIA_FEED_URL`.
-- Docker Linux validation for the feed extension was attempted but Docker Desktop Linux engine was not running: `open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.`
 - `https://www.unrealengine.com/en-US/feed` returned Cloudflare 403 in live testing; the working official default is `https://www.unrealengine.com/rss`.
 
 ## Important Decisions
@@ -70,6 +69,9 @@ Extend the validated arXiv + DeepSeek + Telegram MVP with official Unreal/Epic a
 - `.\.venv\Scripts\python.exe -m ruff format --check .`
 - `$env:PYTHON_IMAGE='docker.m.daocloud.io/library/python:3.11-slim'; docker compose build`
 - `$env:ENABLED_SOURCES='unreal,nvidia'; $env:DATABASE_URL='sqlite:///./data/news-feed-smoke-local-3.sqlite3'; $env:DRY_RUN='true'; $env:DEEPSEEK_API_KEY='replace_me'; $env:TELEGRAM_BOT_TOKEN='replace_me'; $env:TELEGRAM_CHAT_ID='replace_me'; $env:MAX_FEED_RESULTS='3'; .\.venv\Scripts\python.exe -m app.main run-once`
+- `$env:PYTHON_IMAGE='docker.m.daocloud.io/library/python:3.11-slim'; docker compose build`
+- `$env:PYTHON_IMAGE='docker.m.daocloud.io/library/python:3.11-slim'; docker compose run --rm graphics-agent pytest`
+- `$env:PYTHON_IMAGE='docker.m.daocloud.io/library/python:3.11-slim'; docker compose run --rm -e ENABLED_SOURCES=unreal,nvidia -e DATABASE_URL=sqlite:///./data/news-feed-smoke-docker-2.sqlite3 -e DRY_RUN=true -e DEEPSEEK_API_KEY=replace_me -e TELEGRAM_BOT_TOKEN=replace_me -e TELEGRAM_CHAT_ID=replace_me -e MAX_FEED_RESULTS=3 graphics-agent python -m app.main run-once`
 - `$env:PYTHON_IMAGE='docker.m.daocloud.io/library/python:3.11-slim'; docker compose run --rm graphics-agent pytest`
 - `$env:PYTHON_IMAGE='docker.m.daocloud.io/library/python:3.11-slim'; docker compose run --rm graphics-agent python -m app.main run-once`
 - `.\.venv\Scripts\python.exe -m pytest`
@@ -87,18 +89,15 @@ Extend the validated arXiv + DeepSeek + Telegram MVP with official Unreal/Epic a
 - Windows pytest after feed extension and storage migration test: passed, 23 tests.
 - Windows ruff check after feed extension: passed.
 - Windows ruff format check after feed extension: passed.
-- Docker Compose build after feed extension: not run because Docker Desktop Linux engine was unavailable.
 - Live official feed smoke test: passed in dry-run mode. Unreal feed fetched 10 items from `https://www.unrealengine.com/rss`; NVIDIA feed fetched 100 items from `https://developer.nvidia.com/blog/feed/`; 6 items were stored, 2 dry-run messages were rendered, and no Telegram message was sent.
+- Docker Compose build after feed extension: passed.
+- Docker Linux pytest after feed extension: passed, 23 tests.
+- Docker Linux official feed smoke test: passed in dry-run mode. Unreal feed fetched 10 items; NVIDIA feed fetched 100 items; 6 items were stored, 2 dry-run messages were rendered, and no Telegram message was sent.
 
 ## Next Recommended Task
 
-Start Docker Desktop, run Docker Linux validation for the feed extension, then run a dry-run feed smoke test:
+Push the latest commit and run a production dry-run on the VPS with the new default sources:
 
 ```powershell
-$env:PYTHON_IMAGE="docker.m.daocloud.io/library/python:3.11-slim"
-docker compose build
-docker compose run --rm graphics-agent pytest
-$env:ENABLED_SOURCES="unreal,nvidia"
-$env:DATABASE_URL="sqlite:///./data/news-feed-smoke.sqlite3"
-.\.venv\Scripts\python.exe -m app.main run-once
+git push
 ```
