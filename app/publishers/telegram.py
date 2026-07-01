@@ -52,6 +52,8 @@ def render_telegram_message(
         "",
         f"<b>[{format_priority(summary.read_priority)}] {escape_html(summary.title_zh)}</b>",
         "",
+        f"来源：{escape_html(paper.source_name)}",
+        "",
         f"一句话：{escape_html(summary.one_sentence)}",
         "",
         f"问题：{escape_html(summary.problem)}",
@@ -71,7 +73,7 @@ def render_telegram_message(
         f"岗位相关度：{summary.job_relevance_score}/5",
         f"新颖度：{summary.novelty_score}/5",
         "",
-        f"链接：arXiv: {escape_html(paper.abs_url)}",
+        f"链接：{escape_html(paper.item_url)}",
     ]
     if paper.pdf_url:
         lines.append(f"PDF: {escape_html(paper.pdf_url)}")

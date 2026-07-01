@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Rendering News</title>
+    <link>https://example.com/rendering</link>
+    <description>Rendering feed fixture</description>
+    <item>
+      <guid isPermaLink="false">unreal-mega-lights-1</guid>
+      <title>Unreal Engine 5 Mega Lights and Path Tracer Updates</title>
+      <link>https://www.unrealengine.com/en-US/example/mega-lights</link>
+      <description>
+        <![CDATA[
+        <p>Epic discusses Unreal Engine 5 rendering updates, Mega Lights,
+        hardware ray tracing, Lumen, Nanite, and virtual shadow maps.</p>
+        ]]>
+      </description>
+      <author>Epic Games</author>
+      <category>Unreal Engine</category>
+      <category>Rendering</category>
+      <pubDate>Fri, 26 Jun 2026 10:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <guid isPermaLink="false">nvidia-rtx-rendering-1</guid>
+      <title>NVIDIA RTX Neural Rendering and DLSS Ray Reconstruction</title>
+      <link>https://developer.nvidia.com/blog/example-rtx-rendering</link>
+      <description>
+        NVIDIA describes RTX rendering, DLSS ray reconstruction,
+        opacity micromaps, mesh shader workflows, and neural radiance cache.
+      </description>
+      <category>NVIDIA</category>
+      <category>Graphics</category>
+      <pubDate>Thu, 25 Jun 2026 10:00:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

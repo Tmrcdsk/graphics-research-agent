@@ -107,6 +107,8 @@ def parse_arxiv_feed(xml_text: str) -> list[PaperItem]:
 
         items.append(
             PaperItem(
+                source_name="arxiv",
+                source_id=arxiv_id,
                 arxiv_id=arxiv_id,
                 title=title,
                 authors=_extract_authors(entry),

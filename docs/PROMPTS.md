@@ -6,8 +6,8 @@ Prompt versions are code constants and must be changed whenever required fields,
 
 Current versions:
 
-- `classification_v1`
-- `summary_v1`
+- `classification_v2`
+- `summary_v2`
 
 Do not silently change prompt schemas. Update tests and this document when prompts change.
 
@@ -15,7 +15,7 @@ Do not silently change prompt schemas. Update tests and this document when promp
 
 The classification prompt is implemented in `app/llm/prompts.py` as `build_classification_prompt`.
 
-It asks DeepSeek to act as a critical technical assistant for computer graphics papers, apply the user's real-time rendering profile, avoid noisy generic AI/medical/remote-sensing recommendations, and return JSON only.
+It asks DeepSeek to act as a critical technical assistant for computer graphics research items, including arXiv papers and official rendering-related website posts. It applies the user's real-time rendering profile, avoids noisy generic AI/medical/remote-sensing recommendations, and returns JSON only.
 
 Required fields:
 
@@ -38,7 +38,7 @@ Required fields:
 
 The summary prompt is implemented in `app/llm/prompts.py` as `build_summary_prompt`.
 
-It asks for a Chinese summary based only on title and abstract, keeping technical terms such as ReSTIR, path tracing, BRDF, Vulkan, UE, shader, and GPU in English when appropriate.
+It asks for a Chinese summary based only on title and abstract/excerpt, keeping technical terms such as ReSTIR, path tracing, BRDF, Vulkan, UE, shader, and GPU in English when appropriate.
 
 Required fields:
 

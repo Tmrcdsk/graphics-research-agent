@@ -15,6 +15,8 @@ SCHEMA_STATEMENTS = [
     """
     CREATE TABLE IF NOT EXISTS papers (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        source_name TEXT NOT NULL DEFAULT 'arxiv',
+        source_id TEXT,
         arxiv_id TEXT UNIQUE NOT NULL,
         title TEXT NOT NULL,
         authors_json TEXT NOT NULL,
@@ -95,6 +97,32 @@ class Database:
         with self._connection:
             for statement in SCHEMA_STATEMENTS:
                 self._connection.execute(statement)
+            self._migrate_schema()
+
+    def _migrate_schema(self) -> None:
+        columns = self._paper_columns()
+        if "source_name" not in columns:
+            self._connection.execute(
+                "ALTER TABLE papers ADD COLUMN source_name TEXT NOT NULL DEFAULT 'arxiv'"
+            )
+        if "source_id" not in columns:
+            self._connection.execute("ALTER TABLE papers ADD COLUMN source_id TEXT")
+        self._connection.execute(
+            "UPDATE papers SET source_name = 'arxiv' WHERE source_name IS NULL OR source_name = ''"
+        )
+        self._connection.execute(
+            "UPDATE papers SET source_id = arxiv_id WHERE source_id IS NULL OR source_id = ''"
+        )
+        self._connection.execute(
+            """
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_papers_source_id
+            ON papers(source_name, source_id)
+            """
+        )
+
+    def _paper_columns(self) -> set[str]:
+        rows = self._connection.execute("PRAGMA table_info(papers)").fetchall()
+        return {str(row["name"]) for row in rows}
 
     def create_source_run(self, source_name: str) -> int:
         with self._connection:
@@ -153,6 +181,8 @@ class Database:
                 cursor = self._connection.execute(
                     """
                     INSERT INTO papers (
+                        source_name,
+                        source_id,
                         arxiv_id,
                         title,
                         authors_json,
@@ -166,9 +196,11 @@ class Database:
                         raw_json,
                         created_at
                     )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
+                        paper.source_name,
+                        paper.source_id or paper.arxiv_id,
                         paper.arxiv_id,
                         paper.title,
                         json.dumps(paper.authors, ensure_ascii=False),
@@ -198,11 +230,20 @@ class Database:
         row = self._connection.execute(
             """
             SELECT id FROM papers
-            WHERE arxiv_id = ? OR abs_url = ? OR title_hash = ?
+            WHERE arxiv_id = ?
+               OR abs_url = ?
+               OR title_hash = ?
+               OR (source_name = ? AND source_id = ?)
             ORDER BY id ASC
             LIMIT 1
             """,
-            (paper.arxiv_id, paper.abs_url, paper.title_hash),
+            (
+                paper.arxiv_id,
+                paper.abs_url,
+                paper.title_hash,
+                paper.source_name,
+                paper.source_id or paper.arxiv_id,
+            ),
         ).fetchone()
         return int(row["id"]) if row else None
 

@@ -13,8 +13,8 @@ from app.pipeline.dedupe import NewPaper, insert_new_papers
 from app.pipeline.rule_filter import RuleFilterResult, score_paper
 from app.pipeline.summarize import fallback_summary_for_dry_run
 from app.publishers.telegram import TelegramPublisher, render_telegram_message
-from app.sources.arxiv_source import ArxivSource
 from app.sources.models import PaperItem
+from app.sources.source_factory import build_default_source
 from app.storage.db import Database, init_database
 
 logger = logging.getLogger(__name__)
@@ -81,7 +81,7 @@ async def run_once(
     database: Database | None = None,
 ) -> PipelineStats:
     settings = settings or get_settings()
-    source = source or ArxivSource(settings)
+    source = source or build_default_source(settings)
     llm_client = llm_client or DeepSeekClient(settings)
     publisher = publisher or TelegramPublisher(settings)
 
@@ -155,8 +155,9 @@ def _select_rule_candidates(new_papers: list[NewPaper], settings: Settings) -> l
             candidates.append(CandidatePaper(new_paper=new_paper, rule_result=rule_result))
         else:
             logger.info(
-                "Paper below rule threshold arxiv_id=%s score=%s",
-                new_paper.paper.arxiv_id,
+                "Item below rule threshold source=%s item_id=%s score=%s",
+                new_paper.paper.source_name,
+                new_paper.paper.item_id,
                 rule_result.score,
             )
     return candidates
@@ -181,16 +182,18 @@ async def _classify_and_summarize_candidates(
             )
         except DeepSeekError as exc:
             logger.warning(
-                "Skipping paper after DeepSeek failure arxiv_id=%s error=%s",
-                paper.arxiv_id,
+                "Skipping item after DeepSeek failure source=%s item_id=%s error=%s",
+                paper.source_name,
+                paper.item_id,
                 exc,
             )
             continue
 
         if summary.read_priority not in PUBLISHABLE_PRIORITIES:
             logger.info(
-                "Skipping non-publishable summary arxiv_id=%s priority=%s",
-                paper.arxiv_id,
+                "Skipping non-publishable summary source=%s item_id=%s priority=%s",
+                paper.source_name,
+                paper.item_id,
                 summary.read_priority.value,
             )
             continue

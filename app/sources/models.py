@@ -7,6 +7,8 @@ from pydantic import BaseModel, Field
 
 
 class PaperItem(BaseModel):
+    source_name: str = "arxiv"
+    source_id: str | None = None
     arxiv_id: str
     title: str
     authors: list[str]
@@ -18,6 +20,14 @@ class PaperItem(BaseModel):
     pdf_url: str | None = None
     title_hash: str
     raw: dict[str, Any] | None = None
+
+    @property
+    def item_id(self) -> str:
+        return self.source_id or self.arxiv_id
+
+    @property
+    def item_url(self) -> str:
+        return self.abs_url
 
 
 class SourceFetchResult(BaseModel):

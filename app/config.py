@@ -29,10 +29,20 @@ class Settings(BaseSettings):
     log_level: str = Field(default="INFO", alias="LOG_LEVEL")
 
     max_arxiv_results: int = Field(default=80, ge=1, le=500, alias="MAX_ARXIV_RESULTS")
+    max_feed_results: int = Field(default=20, ge=1, le=200, alias="MAX_FEED_RESULTS")
     max_push_must_read: int = Field(default=3, ge=0, alias="MAX_PUSH_MUST_READ")
     max_push_read_later: int = Field(default=5, ge=0, alias="MAX_PUSH_READ_LATER")
     rule_filter_threshold: int = Field(default=5, alias="RULE_FILTER_THRESHOLD")
     arxiv_categories_raw: str = Field(default="cs.GR,cs.CV,cs.LG", alias="ARXIV_CATEGORIES")
+    enabled_sources_raw: str = Field(default="arxiv,unreal,nvidia", alias="ENABLED_SOURCES")
+    unreal_feed_url: str = Field(
+        default="https://www.unrealengine.com/rss",
+        alias="UNREAL_FEED_URL",
+    )
+    nvidia_feed_url: str = Field(
+        default="https://developer.nvidia.com/blog/feed/",
+        alias="NVIDIA_FEED_URL",
+    )
 
     schedule_hour: int = Field(default=9, ge=0, le=23, alias="SCHEDULE_HOUR")
     schedule_minute: int = Field(default=0, ge=0, le=59, alias="SCHEDULE_MINUTE")
@@ -58,6 +68,12 @@ class Settings(BaseSettings):
     @property
     def arxiv_categories(self) -> list[str]:
         return [item.strip() for item in self.arxiv_categories_raw.split(",") if item.strip()]
+
+    @property
+    def enabled_sources(self) -> list[str]:
+        return [
+            item.strip().casefold() for item in self.enabled_sources_raw.split(",") if item.strip()
+        ]
 
     @property
     def database_path(self) -> Path:

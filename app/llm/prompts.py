@@ -5,8 +5,8 @@ import json
 from app.llm.schemas import ClassificationResult
 from app.sources.models import PaperItem
 
-CLASSIFICATION_PROMPT_VERSION = "classification_v1"
-SUMMARY_PROMPT_VERSION = "summary_v1"
+CLASSIFICATION_PROMPT_VERSION = "classification_v2"
+SUMMARY_PROMPT_VERSION = "summary_v2"
 
 
 def _authors(paper: PaperItem) -> str:
@@ -18,7 +18,7 @@ def _categories(paper: PaperItem) -> str:
 
 
 def build_classification_prompt(paper: PaperItem) -> str:
-    return f"""You are a critical technical assistant for reading computer graphics papers.
+    return f"""You are a critical technical assistant for reading computer graphics research items.
 
 User profile:
 - The user is learning toward game engine / real-time rendering engineering.
@@ -29,18 +29,24 @@ User profile:
   remote sensing, pure 3D vision reconstruction, OCR, or unrelated machine learning.
 
 Task:
-Given the paper metadata below, decide whether this paper should be pushed to the user.
+Given the metadata below, decide whether this item should be pushed to the user.
 
-Paper title:
+Source:
+{paper.source_name}
+
+Item URL:
+{paper.item_url}
+
+Title:
 {paper.title}
 
 Authors:
 {_authors(paper)}
 
-arXiv categories:
+Categories or tags:
 {_categories(paper)}
 
-Abstract:
+Abstract or excerpt:
 {paper.abstract}
 
 Return JSON only. Do not wrap the JSON in Markdown.
@@ -59,7 +65,7 @@ Required JSON fields:
   "uncertainty": string
 }}
 
-Be conservative. Do not overpraise. If the paper is only weakly related to
+Be conservative. Do not overpraise. If the item is only weakly related to
 rendering, choose archive_only or skip.
 """
 
@@ -67,26 +73,32 @@ rendering, choose archive_only or skip.
 def build_summary_prompt(paper: PaperItem, classification: ClassificationResult) -> str:
     classification_json = json.dumps(classification.model_dump(mode="json"), ensure_ascii=False)
     return f"""You are a critical technical assistant summarizing computer graphics
-and rendering papers for a Chinese-speaking learner.
+and rendering research items for a Chinese-speaking learner.
 
 The user is learning toward game engine / real-time rendering engineering and
 cares about Vulkan, UE rendering, ReSTIR, GPU rendering pipelines, ray tracing,
 path tracing, global illumination, denoising, shaders, and materials.
 
-Summarize the paper based only on the provided title and abstract. Do not claim
-that the paper has code, benchmarks, or production usability unless it is
+Summarize the item based only on the provided title and abstract/excerpt. Do not
+claim that the item has code, benchmarks, or production usability unless it is
 explicitly stated in the metadata.
 
-Paper title:
+Source:
+{paper.source_name}
+
+Item URL:
+{paper.item_url}
+
+Title:
 {paper.title}
 
 Authors:
 {_authors(paper)}
 
-arXiv categories:
+Categories or tags:
 {_categories(paper)}
 
-Abstract:
+Abstract or excerpt:
 {paper.abstract}
 
 Classification result:

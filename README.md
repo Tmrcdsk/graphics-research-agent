@@ -7,6 +7,8 @@ Graphics Research Agent tracks recent arXiv papers related to computer graphics 
 Implemented MVP scope:
 
 - arXiv source
+- Unreal Engine / Epic official feed source
+- NVIDIA Developer Blog official feed source
 - SQLite deduplication and publish logs
 - Rule-based first-pass filtering
 - DeepSeek-compatible structured classification and summarization
@@ -44,9 +46,13 @@ Required for live LLM and Telegram:
 
 Useful runtime settings:
 
+- `ENABLED_SOURCES=arxiv,unreal,nvidia`
+- `UNREAL_FEED_URL=https://www.unrealengine.com/rss`
+- `NVIDIA_FEED_URL=https://developer.nvidia.com/blog/feed/`
 - `DATABASE_URL=sqlite:///./data/agent.sqlite3`
 - `DRY_RUN=true`
 - `MAX_ARXIV_RESULTS=80`
+- `MAX_FEED_RESULTS=20`
 - `RULE_FILTER_THRESHOLD=5`
 - `MAX_PUSH_MUST_READ=3`
 - `MAX_PUSH_READ_LATER=5`
@@ -58,6 +64,21 @@ python -m app.main run-once
 ```
 
 When `DRY_RUN=true`, Telegram messages are logged but never sent. If DeepSeek is not configured, the pipeline uses a local dry-run fallback summary so the arXiv to SQLite to publish-log loop can be tested without secrets.
+
+To test only official website feeds:
+
+```powershell
+$env:ENABLED_SOURCES="unreal,nvidia"
+$env:DATABASE_URL="sqlite:///./data/news-feed-smoke.sqlite3"
+python -m app.main run-once
+```
+
+Remove those temporary environment variables after the smoke test:
+
+```powershell
+Remove-Item Env:\ENABLED_SOURCES -ErrorAction SilentlyContinue
+Remove-Item Env:\DATABASE_URL -ErrorAction SilentlyContinue
+```
 
 ## Tests and Linting
 

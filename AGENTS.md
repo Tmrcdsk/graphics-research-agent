@@ -6,7 +6,9 @@ This project tracks arXiv papers related to computer graphics and rendering, sum
 
 ## Current MVP Scope
 
-- arXiv source only
+- arXiv source
+- Unreal Engine / Epic official feed source
+- NVIDIA Developer Blog official feed source
 - DeepSeek V4 Flash classification and summarization
 - SQLite persistence
 - Telegram publisher
@@ -24,6 +26,7 @@ This project tracks arXiv papers related to computer graphics and rendering, sum
 - GitHub discovery
 - Semantic Scholar
 - Web dashboard
+- Scraping pages without an official feed
 
 ## Hard Rules for AI Agents
 

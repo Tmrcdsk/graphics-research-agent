@@ -44,6 +44,8 @@ def test_render_telegram_message_escapes_html(sample_papers: list[PaperItem]) ->
     assert "测试 &lt;shader&gt; 论文" in message
     assert "<shader>" not in message
     assert "岗位相关度：5/5" in message
+    assert "来源：arxiv" in message
+    assert "链接：http://arxiv.org/abs/2606.00001v1" in message
 
 
 def test_split_message_keeps_chunks_under_limit() -> None:

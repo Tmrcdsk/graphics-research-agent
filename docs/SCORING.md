@@ -23,12 +23,27 @@ The MVP uses a conservative keyword score before calling DeepSeek. Papers below 
 | bsdf | 4 |
 | material | 3 |
 | shader | 5 |
+| mesh shader | 6 |
+| work graph | 5 |
 | vulkan | 6 |
 | directx | 5 |
+| directx 12 | 6 |
 | unreal engine | 6 |
+| ue5 | 6 |
+| ue 5 | 6 |
+| unreal | 4 |
+| mega lights | 6 |
+| path tracer | 5 |
+| hardware ray tracing | 6 |
+| virtual shadow map | 5 |
+| virtualized geometry | 4 |
 | lumen | 5 |
 | nanite | 5 |
+| rtx | 4 |
 | dlss | 5 |
+| ray reconstruction | 5 |
+| opacity micromap | 5 |
+| neural radiance cache | 6 |
 | fsr | 5 |
 
 ## Negative Keywords

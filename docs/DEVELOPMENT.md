@@ -64,7 +64,7 @@ The repository uses `.gitattributes` and `.editorconfig` to keep Linux-safe LF l
 4. Add tests that do not call the real network.
 5. Update `docs/ARCHITECTURE.md`, `CURRENT_STATUS.md`, and `CHANGELOG.md`.
 
-Do not add non-MVP sources until the arXiv + Telegram loop is stable.
+Official website feeds should use `NewsFeedSource` with fixture tests. Do not add RSSHub or scraping-only sources unless the project scope changes.
 
 ## Adding a Publisher
 
