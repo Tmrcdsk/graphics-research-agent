@@ -94,7 +94,8 @@ Broaden the validated arXiv + DeepSeek + Telegram pipeline with high-signal offi
 - Docker Linux live-feed dry-run: passed with the same 10 fetched items, 6 candidates, and 2 dry-run publish-log records. No Telegram message was sent.
 - Local production deployment: passed. Container `graphics-research-agent` is running and the scheduler started for 09:00 Asia/Tokyo.
 - Runtime configuration check: `production`, `DRY_RUN=false`, and all eight sources enabled.
+- Conventional source commit created locally. The GitHub push is pending explicit authorization for `origin/main`.
 
 ## Next Recommended Task
 
-Commit and push this validated source expansion. For a real VPS deployment, provide the VPS host, SSH user/port/key path, repository access method, and desired deployment directory; then run the documented Docker Compose deployment with the VPS production `.env`.
+Push the validated local commits after explicitly authorizing `origin/main`. For a real VPS deployment, provide the VPS host, SSH user/port/key path, repository access method, and desired deployment directory; then run the documented Docker Compose deployment with the VPS production `.env`.
