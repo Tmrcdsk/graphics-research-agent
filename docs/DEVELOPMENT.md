@@ -58,11 +58,12 @@ The repository uses `.gitattributes` and `.editorconfig` to keep Linux-safe LF l
 
 ## Adding a Source
 
-1. Add a module under `app/sources`.
+1. For a standard official RSS/Atom feed, add a URL setting and an `OFFICIAL_FEED_SPECS` entry. Add a new module only for a different protocol or data model.
 2. Return `PaperItem` objects.
-3. Add fixture files under `tests/fixtures`.
+3. Add a source-specific fixture under `tests/fixtures`.
 4. Add tests that do not call the real network.
-5. Update `docs/ARCHITECTURE.md`, `CURRENT_STATUS.md`, and `CHANGELOG.md`.
+5. Add any source-specific rendering terms to the rule filter with scoring tests.
+6. Update `docs/ARCHITECTURE.md`, `CURRENT_STATUS.md`, and `CHANGELOG.md`.
 
 Official website feeds should use `NewsFeedSource` with fixture tests. Do not add RSSHub or scraping-only sources unless the project scope changes.
 

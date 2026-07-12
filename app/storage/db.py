@@ -77,6 +77,12 @@ SCHEMA_STATEMENTS = [
 ]
 
 
+def _required_lastrowid(cursor: sqlite3.Cursor) -> int:
+    if cursor.lastrowid is None:
+        raise RuntimeError("SQLite insert did not return a row ID")
+    return cursor.lastrowid
+
+
 class Database:
     def __init__(self, database_path: Path) -> None:
         self.path = database_path
@@ -133,7 +139,7 @@ class Database:
                 """,
                 (source_name, utc_now_iso(), "running"),
             )
-        return int(cursor.lastrowid)
+        return _required_lastrowid(cursor)
 
     def finish_source_run(
         self,
@@ -219,7 +225,7 @@ class Database:
                         utc_now_iso(),
                     ),
                 )
-            return InsertPaperResult(paper_id=int(cursor.lastrowid), is_new=True)
+            return InsertPaperResult(paper_id=_required_lastrowid(cursor), is_new=True)
         except sqlite3.IntegrityError:
             duplicate_id = self.find_duplicate_paper_id(paper)
             if duplicate_id is None:
@@ -287,7 +293,7 @@ class Database:
                     utc_now_iso(),
                 ),
             )
-        return int(cursor.lastrowid)
+        return _required_lastrowid(cursor)
 
     def has_successful_publish(self, paper_id: int, channel: str) -> bool:
         row = self._connection.execute(
@@ -324,7 +330,7 @@ class Database:
                 """,
                 (paper_id, channel, status, external_message_id, error, utc_now_iso()),
             )
-        return int(cursor.lastrowid)
+        return _required_lastrowid(cursor)
 
     def count_rows(self, table_name: str) -> int:
         if table_name not in {"papers", "summaries", "publish_logs", "source_runs"}:

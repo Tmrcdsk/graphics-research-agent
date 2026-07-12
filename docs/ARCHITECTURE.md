@@ -5,7 +5,7 @@
 The MVP pipeline is:
 
 ```text
-arXiv / official RSS feeds
+arXiv / official rendering RSS feeds
   -> parse/normalize
   -> SQLite dedupe
   -> rule filter
@@ -24,8 +24,9 @@ A source exposes `source_name` and `fetch_recent() -> list[PaperItem]`.
 Current sources:
 
 - `ArxivSource`: fetches Atom XML from the arXiv API.
-- `NewsFeedSource`: fetches official RSS/Atom feeds such as Unreal Engine and NVIDIA Developer Blog.
+- `NewsFeedSource`: fetches official RSS/Atom feeds for Unreal Engine, NVIDIA, AMD GPUOpen, DirectX, Khronos Vulkan News, and ACM SIGGRAPH categories.
 - `MultiSource`: combines enabled sources and isolates source-level failures.
+- `OFFICIAL_FEED_SPECS`: data-driven registry that maps source names to configurable URLs and labels. Unknown configured source names fail before fetching.
 
 Unit tests call parser functions directly with fixture XML.
 
@@ -37,7 +38,7 @@ Unit tests call parser functions directly with fixture XML.
 
 SQLite tables:
 
-- `papers`: normalized arXiv papers
+- `papers`: normalized papers and official feed items
 - `summaries`: validated classification and summary JSON
 - `publish_logs`: Telegram success, dry-run, or failed publish attempts
 - `source_runs`: pipeline run accounting
@@ -52,8 +53,8 @@ DeepSeek is called through an OpenAI-compatible `/chat/completions` request. The
 
 Prompt versions:
 
-- `classification_v1`
-- `summary_v1`
+- `classification_v2`
+- `summary_v2`
 
 ## Publisher Interface
 

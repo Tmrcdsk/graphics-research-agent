@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Research - ACM SIGGRAPH Blog</title>
+    <link>https://blog.siggraph.org/category/research/</link>
+    <description>ACM SIGGRAPH research stories</description>
+    <item>
+      <title>Path Tracing Research Advances at SIGGRAPH</title>
+      <link>https://blog.siggraph.org/path-tracing-research-advances/</link>
+      <guid isPermaLink="false">siggraph-research-path-tracing</guid>
+      <dc:creator>SIGGRAPH Research Team</dc:creator>
+      <description><![CDATA[Researchers present new sampling and denoising methods for production and real-time path tracing.]]></description>
+      <pubDate>Tue, 19 May 2026 16:00:00 +0000</pubDate>
+      <category>Research</category>
+      <category>Technical Papers</category>
+    </item>
+  </channel>
+</rss>

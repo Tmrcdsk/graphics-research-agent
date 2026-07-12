@@ -1,6 +1,6 @@
 # Graphics Research Agent
 
-Graphics Research Agent tracks recent arXiv papers related to computer graphics and rendering, filters them for relevance to real-time rendering and game-engine learning, summarizes selected papers with DeepSeek, and publishes concise Chinese summaries to Telegram.
+Graphics Research Agent tracks recent computer graphics papers and official rendering engineering news, filters them for relevance to real-time rendering and game-engine learning, summarizes selected items with DeepSeek, and publishes concise Chinese summaries to Telegram.
 
 ## MVP Scope
 
@@ -9,6 +9,11 @@ Implemented MVP scope:
 - arXiv source
 - Unreal Engine / Epic official feed source
 - NVIDIA Developer Blog official feed source
+- AMD GPUOpen official feed source
+- Microsoft DirectX Developer Blog official feed source
+- Khronos Vulkan News official feed source
+- ACM SIGGRAPH Real-Time official feed source
+- ACM SIGGRAPH Research official feed source
 - SQLite deduplication and publish logs
 - Rule-based first-pass filtering
 - DeepSeek-compatible structured classification and summarization
@@ -46,9 +51,14 @@ Required for live LLM and Telegram:
 
 Useful runtime settings:
 
-- `ENABLED_SOURCES=arxiv,unreal,nvidia`
+- `ENABLED_SOURCES=arxiv,unreal,nvidia,gpuopen,directx,vulkan,siggraph_realtime,siggraph_research`
 - `UNREAL_FEED_URL=https://www.unrealengine.com/rss`
 - `NVIDIA_FEED_URL=https://developer.nvidia.com/blog/feed/`
+- `GPUOPEN_FEED_URL=https://gpuopen.com/feed.xml`
+- `DIRECTX_FEED_URL=https://devblogs.microsoft.com/directx/feed/`
+- `VULKAN_FEED_URL=https://www.khronos.org/feeds/vulkan_news_feed`
+- `SIGGRAPH_REALTIME_FEED_URL=https://blog.siggraph.org/category/realtime/feed/`
+- `SIGGRAPH_RESEARCH_FEED_URL=https://blog.siggraph.org/category/research/feed/`
 - `DATABASE_URL=sqlite:///./data/agent.sqlite3`
 - `DRY_RUN=true`
 - `MAX_ARXIV_RESULTS=80`
@@ -65,10 +75,10 @@ python -m app.main run-once
 
 When `DRY_RUN=true`, Telegram messages are logged but never sent. If DeepSeek is not configured, the pipeline uses a local dry-run fallback summary so the arXiv to SQLite to publish-log loop can be tested without secrets.
 
-To test only official website feeds:
+To test only the new high-signal official feeds:
 
 ```powershell
-$env:ENABLED_SOURCES="unreal,nvidia"
+$env:ENABLED_SOURCES="gpuopen,directx,vulkan,siggraph_realtime,siggraph_research"
 $env:DATABASE_URL="sqlite:///./data/news-feed-smoke.sqlite3"
 python -m app.main run-once
 ```
@@ -79,6 +89,8 @@ Remove those temporary environment variables after the smoke test:
 Remove-Item Env:\ENABLED_SOURCES -ErrorAction SilentlyContinue
 Remove-Item Env:\DATABASE_URL -ErrorAction SilentlyContinue
 ```
+
+Unknown names in `ENABLED_SOURCES` fail fast so a misspelled source cannot be silently skipped.
 
 ## Tests and Linting
 

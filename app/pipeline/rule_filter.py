@@ -28,6 +28,11 @@ POSITIVE_KEYWORDS: dict[str, int] = {
     "vulkan": 6,
     "directx": 5,
     "directx 12": 6,
+    "direct3d": 6,
+    "d3d12": 6,
+    "shader model": 6,
+    "agility sdk": 5,
+    "agilitysdk": 5,
     "unreal engine": 6,
     "ue5": 6,
     "ue 5": 6,
@@ -45,6 +50,15 @@ POSITIVE_KEYWORDS: dict[str, int] = {
     "opacity micromap": 5,
     "neural radiance cache": 6,
     "fsr": 5,
+    "fidelityfx": 6,
+    "super resolution": 5,
+    "upscaling": 5,
+    "frame generation": 5,
+    "rasterization": 5,
+    "temporal anti-aliasing": 5,
+    "screen space reflections": 5,
+    "ambient occlusion": 5,
+    "volumetric rendering": 5,
 }
 
 NEGATIVE_KEYWORDS: dict[str, int] = {

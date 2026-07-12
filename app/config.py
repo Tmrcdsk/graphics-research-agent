@@ -34,7 +34,10 @@ class Settings(BaseSettings):
     max_push_read_later: int = Field(default=5, ge=0, alias="MAX_PUSH_READ_LATER")
     rule_filter_threshold: int = Field(default=5, alias="RULE_FILTER_THRESHOLD")
     arxiv_categories_raw: str = Field(default="cs.GR,cs.CV,cs.LG", alias="ARXIV_CATEGORIES")
-    enabled_sources_raw: str = Field(default="arxiv,unreal,nvidia", alias="ENABLED_SOURCES")
+    enabled_sources_raw: str = Field(
+        default=("arxiv,unreal,nvidia,gpuopen,directx,vulkan,siggraph_realtime,siggraph_research"),
+        alias="ENABLED_SOURCES",
+    )
     unreal_feed_url: str = Field(
         default="https://www.unrealengine.com/rss",
         alias="UNREAL_FEED_URL",
@@ -42,6 +45,26 @@ class Settings(BaseSettings):
     nvidia_feed_url: str = Field(
         default="https://developer.nvidia.com/blog/feed/",
         alias="NVIDIA_FEED_URL",
+    )
+    gpuopen_feed_url: str = Field(
+        default="https://gpuopen.com/feed.xml",
+        alias="GPUOPEN_FEED_URL",
+    )
+    directx_feed_url: str = Field(
+        default="https://devblogs.microsoft.com/directx/feed/",
+        alias="DIRECTX_FEED_URL",
+    )
+    vulkan_feed_url: str = Field(
+        default="https://www.khronos.org/feeds/vulkan_news_feed",
+        alias="VULKAN_FEED_URL",
+    )
+    siggraph_realtime_feed_url: str = Field(
+        default="https://blog.siggraph.org/category/realtime/feed/",
+        alias="SIGGRAPH_REALTIME_FEED_URL",
+    )
+    siggraph_research_feed_url: str = Field(
+        default="https://blog.siggraph.org/category/research/feed/",
+        alias="SIGGRAPH_RESEARCH_FEED_URL",
     )
 
     schedule_hour: int = Field(default=9, ge=0, le=23, alias="SCHEDULE_HOUR")

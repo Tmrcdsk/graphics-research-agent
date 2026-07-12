@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Real-Time - ACM SIGGRAPH Blog</title>
+    <link>https://blog.siggraph.org/category/realtime/</link>
+    <description>ACM SIGGRAPH real-time graphics stories</description>
+    <item>
+      <title>Real-Time Neural Rendering for Interactive Worlds</title>
+      <link>https://blog.siggraph.org/real-time-neural-rendering/</link>
+      <guid isPermaLink="false">siggraph-realtime-neural-rendering</guid>
+      <dc:creator>ACM SIGGRAPH</dc:creator>
+      <description><![CDATA[A technical look at neural rendering, path tracing, and interactive frame rates.]]></description>
+      <pubDate>Tue, 17 Feb 2026 09:00:00 +0000</pubDate>
+      <category>Real-Time</category>
+      <category>Rendering</category>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>AMD GPUOpen</title>
+    <link>https://gpuopen.com/</link>
+    <description>Gaming and graphics technologies from AMD</description>
+    <atom:link href="https://gpuopen.com/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>AMD FSR Upscaling 4.1 RDNA 3 Support Now Available</title>
+      <link>https://gpuopen.com/learn/amd-fsr-sdk-update/</link>
+      <guid isPermaLink="true">https://gpuopen.com/learn/amd-fsr-sdk-update/</guid>
+      <description><![CDATA[AMD FidelityFX Super Resolution adds improved upscaling and frame generation for real-time rendering.]]></description>
+      <pubDate>Wed, 24 Jun 2026 12:00:00 +0000</pubDate>
+      <category>AMD FSR</category>
+      <category>Rendering</category>
+    </item>
+  </channel>
+</rss>

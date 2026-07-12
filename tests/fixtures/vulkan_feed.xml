@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>News</title>
+    <link>https://www.khronos.org/news/</link>
+    <description>Khronos Vulkan ecosystem news</description>
+    <item>
+      <title>Vulkan Ray Tracing: Acceleration Structure Updates</title>
+      <link>https://www.khronos.org/blog/vulkan-ray-tracing-update</link>
+      <guid isPermaLink="true">https://www.khronos.org/blog/vulkan-ray-tracing-update</guid>
+      <description><![CDATA[The Vulkan ecosystem is updating ray tracing acceleration structure workflows for graphics developers.]]></description>
+      <pubDate>Wed, 08 Jul 2026 14:04:54 +0000</pubDate>
+      <category>Vulkan</category>
+      <category>Ray Tracing</category>
+    </item>
+  </channel>
+</rss>

@@ -29,7 +29,8 @@ class Source(Protocol):
 
 
 class LlmClient(Protocol):
-    is_configured: bool
+    @property
+    def is_configured(self) -> bool: ...
 
     async def classify_paper(self, paper: PaperItem) -> ClassificationResult: ...
 
@@ -81,18 +82,18 @@ async def run_once(
     database: Database | None = None,
 ) -> PipelineStats:
     settings = settings or get_settings()
-    source = source or build_default_source(settings)
-    llm_client = llm_client or DeepSeekClient(settings)
-    publisher = publisher or TelegramPublisher(settings)
+    active_source: Source = source or build_default_source(settings)
+    active_llm_client: LlmClient = llm_client or DeepSeekClient(settings)
+    active_publisher: Publisher = publisher or TelegramPublisher(settings)
 
     owns_database = database is None
     database = database or init_database(settings)
-    run_id = database.create_source_run(source.source_name)
+    run_id = database.create_source_run(active_source.source_name)
     stats = PipelineStats()
 
     logger.info("Pipeline run started")
     try:
-        papers = await source.fetch_recent()
+        papers = await active_source.fetch_recent()
         stats.fetched_count = len(papers)
 
         dedupe_result = insert_new_papers(database, papers)
@@ -107,14 +108,14 @@ async def run_once(
         summary_candidates = await _classify_and_summarize_candidates(
             candidates=candidates,
             settings=settings,
-            llm_client=llm_client,
+            llm_client=active_llm_client,
             database=database,
         )
         stats.summarized_count = len(summary_candidates)
         logger.info("Validated summaries=%s", stats.summarized_count)
 
         selected = select_for_push(summary_candidates, settings)
-        stats.pushed_count = await _publish_selected(selected, database, publisher)
+        stats.pushed_count = await _publish_selected(selected, database, active_publisher)
 
         stats.status = "success"
         database.finish_source_run(

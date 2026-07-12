@@ -17,6 +17,12 @@
 - Feed parser fixture tests and source factory tests.
 - Troubleshooting note warning that `docker compose config` can print real `.env` secrets.
 - Live dry-run smoke test coverage for official Unreal and NVIDIA feed fetching.
+- Official AMD GPUOpen, Microsoft DirectX, Khronos Vulkan News, ACM SIGGRAPH Real-Time, and ACM SIGGRAPH Research feed sources.
+- Source-specific offline fixtures and parsing tests for every newly added official feed.
+- Data-driven official feed registry with fail-fast validation for unknown `ENABLED_SOURCES` values.
+- Regression coverage for mixed successful/failed sources and Telegram URL token redaction.
+- Source protocol and SQLite insert typing tightened so the full application passes mypy.
+- Windows and Docker Linux live-feed dry-run validation for all five new sources.
 
 ### Changed
 
@@ -29,6 +35,9 @@
 - Telegram messages now show a generic source and link instead of arXiv-only labels.
 - Rule filtering now includes Unreal Engine and NVIDIA rendering keywords such as UE5, Mega Lights, RTX, DLSS, mesh shader, and neural radiance cache.
 - Unreal default feed URL now uses `https://www.unrealengine.com/rss`, because `/en-US/feed` returned Cloudflare 403 during live testing.
+- Default source selection now includes the five new high-signal rendering feeds.
+- Rendering keyword scoring now covers Direct3D, Shader Model, FSR/FidelityFX, upscaling, frame generation, rasterization, and common real-time effects.
+- Docker Compose now exposes `APP_ENV` and `ENABLED_SOURCES` as explicit overridable settings.
 
 ### Fixed
 
@@ -37,6 +46,8 @@
 - Docker build can now use a reachable Python image mirror through `PYTHON_IMAGE`.
 - Replaced mojibake in the Telegram message template with valid Chinese labels.
 - Feed titles are stripped of HTML before storage and Telegram rendering.
+- Telegram Bot Tokens embedded in `httpx.URL` log arguments are now redacted before formatting.
+- A failed source no longer makes a multi-source run fail when another source completed successfully with zero items.
 
 ### Removed
 

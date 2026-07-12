@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from app.sources.feed_source import FeedSourceConfig, parse_news_feed
 
 
@@ -47,3 +49,65 @@ def test_parse_news_feed_uses_default_author(fixture_dir: Path) -> None:
     assert items[1].authors == ["NVIDIA"]
     assert items[1].source_name == "nvidia"
     assert items[1].arxiv_id.startswith("nvidia:")
+
+
+@pytest.mark.parametrize(
+    ("fixture_name", "source_name", "source_label", "default_author", "title_fragment"),
+    [
+        ("gpuopen_feed.xml", "gpuopen", "AMD GPUOpen", "AMD", "FSR Upscaling"),
+        (
+            "directx_feed.xml",
+            "directx",
+            "DirectX Developer Blog",
+            "Microsoft",
+            "Shader Model",
+        ),
+        (
+            "vulkan_feed.xml",
+            "vulkan",
+            "Khronos Vulkan News",
+            "Khronos Group",
+            "Vulkan Ray Tracing",
+        ),
+        (
+            "siggraph_realtime_feed.xml",
+            "siggraph_realtime",
+            "ACM SIGGRAPH Real-Time",
+            "ACM SIGGRAPH",
+            "Real-Time Neural Rendering",
+        ),
+        (
+            "siggraph_research_feed.xml",
+            "siggraph_research",
+            "ACM SIGGRAPH Research",
+            "ACM SIGGRAPH",
+            "Path Tracing",
+        ),
+    ],
+)
+def test_parse_each_official_feed_fixture(
+    fixture_dir: Path,
+    fixture_name: str,
+    source_name: str,
+    source_label: str,
+    default_author: str,
+    title_fragment: str,
+) -> None:
+    config = FeedSourceConfig(
+        source_name=source_name,
+        source_label=source_label,
+        feed_url=f"https://example.test/{source_name}.xml",
+        default_author=default_author,
+    )
+
+    items = parse_news_feed((fixture_dir / fixture_name).read_text(encoding="utf-8"), config)
+
+    assert len(items) == 1
+    item = items[0]
+    assert item.source_name == source_name
+    assert item.arxiv_id.startswith(f"{source_name}:")
+    assert title_fragment in item.title
+    assert item.authors
+    assert item.abstract
+    assert item.abs_url.startswith("https://")
+    assert source_label in item.categories

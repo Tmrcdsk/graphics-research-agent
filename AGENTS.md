@@ -2,13 +2,17 @@
 
 ## Project Mission
 
-This project tracks arXiv papers related to computer graphics and rendering, summarizes selected papers with DeepSeek, and pushes concise Chinese summaries to Telegram.
+This project tracks computer graphics papers and official rendering engineering news, summarizes selected items with DeepSeek, and pushes concise Chinese summaries to Telegram.
 
 ## Current MVP Scope
 
 - arXiv source
 - Unreal Engine / Epic official feed source
 - NVIDIA Developer Blog official feed source
+- AMD GPUOpen official feed source
+- Microsoft DirectX Developer Blog official feed source
+- Khronos Vulkan News official feed source
+- ACM SIGGRAPH Real-Time and Research official feed sources
 - DeepSeek V4 Flash classification and summarization
 - SQLite persistence
 - Telegram publisher

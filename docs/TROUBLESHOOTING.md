@@ -11,9 +11,9 @@ docker compose run --rm graphics-agent python -m app.main run-once
 
 The scheduler should log the failure and continue running.
 
-## Unreal / NVIDIA Feed Failure
+## Official Feed Failure
 
-Check `ENABLED_SOURCES`, `UNREAL_FEED_URL`, and `NVIDIA_FEED_URL`. Website feeds are official RSS/Atom endpoints and may fail independently. In multi-source mode, one failed source is logged and other sources continue.
+Check `ENABLED_SOURCES` and the matching `*_FEED_URL` setting. Website feeds are official RSS/Atom endpoints and may fail independently. In multi-source mode, one failed source is logged and other sources continue. Unknown source names fail fast instead of being silently ignored.
 
 ## DeepSeek API Failure
 
@@ -82,6 +82,8 @@ PYTHON_IMAGE=docker.m.daocloud.io/library/python:3.11-slim
 ## Docker Compose Config Prints Secrets
 
 After `.env` contains real credentials, do not paste `docker compose config` output into issues, chats, or logs. Docker Compose may expand `env_file` values and print tokens such as `DEEPSEEK_API_KEY` and `TELEGRAM_BOT_TOKEN`.
+
+Use `docker compose config --quiet` when only syntax validation is needed. Avoid `docker inspect`, container `env`/`printenv`, and shell commands that print `.env`. Telegram request URLs are redacted by the application logger, but deployment tooling must still treat all environment output as sensitive.
 
 ## Windows / Docker Desktop / WSL2 Networking
 

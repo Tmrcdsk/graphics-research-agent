@@ -10,21 +10,17 @@ class SecretRedactionFilter(logging.Filter):
         super().__init__()
         self._secrets = [secret for secret in secrets if secret]
 
-    def _redact(self, value: object) -> object:
-        if not isinstance(value, str):
-            return value
-        redacted = value
+    def _redact(self, value: object) -> str:
+        redacted = str(value)
         for secret in self._secrets:
             if secret and secret in redacted:
                 redacted = redacted.replace(secret, "[REDACTED]")
         return redacted
 
     def filter(self, record: logging.LogRecord) -> bool:
-        record.msg = self._redact(record.msg)
-        if isinstance(record.args, tuple):
-            record.args = tuple(self._redact(arg) for arg in record.args)
-        elif isinstance(record.args, dict):
-            record.args = {key: self._redact(value) for key, value in record.args.items()}
+        # Format first so secrets embedded in objects such as httpx.URL are redacted too.
+        record.msg = self._redact(record.getMessage())
+        record.args = ()
         return True
 
 

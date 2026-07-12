@@ -27,6 +27,7 @@ Set:
 - `DEEPSEEK_API_KEY`
 - `TELEGRAM_BOT_TOKEN`
 - `TELEGRAM_CHAT_ID`
+- `ENABLED_SOURCES=arxiv,unreal,nvidia,gpuopen,directx,vulkan,siggraph_realtime,siggraph_research`
 
 ## Volumes
 
@@ -39,6 +40,8 @@ docker compose build
 docker compose up -d
 docker compose restart graphics-agent
 ```
+
+Run `docker compose config --quiet` for syntax validation. Do not share full `docker compose config`, `docker inspect`, or environment output because it can expose credentials.
 
 ## Logs
 
