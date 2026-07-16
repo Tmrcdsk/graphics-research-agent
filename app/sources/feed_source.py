@@ -32,6 +32,7 @@ class FeedSourceConfig:
     source_label: str
     feed_url: str
     default_author: str
+    required_any_terms: tuple[str, ...] = ()
 
 
 def strip_html(value: str) -> str:
@@ -93,6 +94,19 @@ def _stable_source_item_id(source_name: str, raw_id: str, title: str, link: str)
     seed = raw_id or link or title
     digest = hashlib.sha256(seed.encode("utf-8")).hexdigest()[:24]
     return f"{source_name}:{digest}"
+
+
+def _matches_required_terms(item: PaperItem, required_terms: tuple[str, ...]) -> bool:
+    if not required_terms:
+        return True
+    text = f"{item.title}\n{item.abstract}".casefold()
+    return any(
+        re.search(
+            rf"(?<![a-z0-9]){re.escape(term.casefold())}(?![a-z0-9])",
+            text,
+        )
+        for term in required_terms
+    )
 
 
 def parse_news_feed(xml_text: str, config: FeedSourceConfig) -> list[PaperItem]:
@@ -157,8 +171,18 @@ class NewsFeedSource:
             self._config.feed_url,
         )
         xml_text = await self._fetch_text(self._config.feed_url)
-        items = parse_news_feed(xml_text, self._config)
-        logger.info("Fetched %s %s feed items", len(items), self._config.source_name)
+        parsed_items = parse_news_feed(xml_text, self._config)
+        items = [
+            item
+            for item in parsed_items
+            if _matches_required_terms(item, self._config.required_any_terms)
+        ]
+        logger.info(
+            "Fetched %s %s feed items; selected=%s after source constraints",
+            len(parsed_items),
+            self._config.source_name,
+            len(items),
+        )
         return items[: self._settings.max_feed_results]
 
     async def _fetch_text(self, url: str) -> str:

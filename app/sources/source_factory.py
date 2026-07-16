@@ -19,6 +19,7 @@ class OfficialFeedSpec:
     settings_url_field: str
     default_author: str
     aliases: tuple[str, ...] = ()
+    required_any_terms: tuple[str, ...] = ()
 
 
 OFFICIAL_FEED_SPECS = (
@@ -64,6 +65,13 @@ OFFICIAL_FEED_SPECS = (
         source_label="ACM SIGGRAPH Research",
         settings_url_field="siggraph_research_feed_url",
         default_author="ACM SIGGRAPH",
+    ),
+    OfficialFeedSpec(
+        source_name="gdc",
+        source_label="GDC via Game Developer",
+        settings_url_field="gdc_feed_url",
+        default_author="Game Developer",
+        required_any_terms=("gdc", "game developers conference"),
     ),
 )
 
@@ -127,6 +135,7 @@ def build_sources(settings: Settings) -> list[Source]:
                     source_label=spec.source_label,
                     feed_url=getattr(settings, spec.settings_url_field),
                     default_author=spec.default_author,
+                    required_any_terms=spec.required_any_terms,
                 ),
             )
         )

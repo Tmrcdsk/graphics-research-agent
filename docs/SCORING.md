@@ -9,6 +9,16 @@ The MVP uses a conservative keyword score before calling DeepSeek. Papers below 
 | rendering | 3 |
 | real-time rendering | 6 |
 | real time rendering | 6 |
+| real-time graphics | 6 |
+| real time graphics | 6 |
+| rendering pipeline | 5 |
+| graphics pipeline | 5 |
+| rendering architecture | 5 |
+| physically based rendering | 6 |
+| pbr | 5 |
+| gpu optimization | 5 |
+| occlusion culling | 5 |
+| advanced graphics summit | 5 |
 | path tracing | 6 |
 | ray tracing | 6 |
 | global illumination | 6 |

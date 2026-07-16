@@ -24,9 +24,14 @@ A source exposes `source_name` and `fetch_recent() -> list[PaperItem]`.
 Current sources:
 
 - `ArxivSource`: fetches Atom XML from the arXiv API.
-- `NewsFeedSource`: fetches official RSS/Atom feeds for Unreal Engine, NVIDIA, AMD GPUOpen, DirectX, Khronos Vulkan News, and ACM SIGGRAPH categories.
+- `NewsFeedSource`: fetches official RSS/Atom feeds for Unreal Engine, NVIDIA, AMD GPUOpen, DirectX, Khronos Vulkan News, ACM SIGGRAPH categories, and GDC-related GameDeveloper.com coverage.
 - `MultiSource`: combines enabled sources and isolates source-level failures.
 - `OFFICIAL_FEED_SPECS`: data-driven registry that maps source names to configurable URLs and labels. Unknown configured source names fail before fetching.
+
+Feed specs may define `required_any_terms`. The GDC source uses this source-level constraint to keep
+only RSS entries that explicitly mention `GDC` or `Game Developers Conference` before SQLite storage
+and rendering relevance scoring. This prevents unrelated GameDeveloper.com industry news from
+entering the pipeline.
 
 Unit tests call parser functions directly with fixture XML.
 

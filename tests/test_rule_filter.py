@@ -39,6 +39,7 @@ def test_rule_filter_penalizes_medical_and_language_model_noise(
             "neural rendering",
         ),
         ("siggraph_research", "A new path tracing sampling method", "path tracing"),
+        ("gdc", "A modern rendering pipeline for block worlds", "rendering pipeline"),
     ],
 )
 def test_rule_filter_covers_new_official_sources(
@@ -55,3 +56,20 @@ def test_rule_filter_covers_new_official_sources(
 
     assert result.is_candidate
     assert expected_keyword in result.positive_matches
+
+
+def test_rule_filter_does_not_treat_gdc_name_as_rendering_signal(
+    sample_papers: list[PaperItem],
+) -> None:
+    paper = sample_papers[0].model_copy(
+        update={
+            "source_name": "gdc",
+            "title": "Registration opens for the next GDC",
+            "abstract": "Conference dates, venue details, and ticket information.",
+        }
+    )
+
+    result = score_paper(paper, threshold=5)
+
+    assert not result.is_candidate
+    assert result.positive_matches == []

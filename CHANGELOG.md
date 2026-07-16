@@ -23,6 +23,10 @@
 - Regression coverage for mixed successful/failed sources and Telegram URL token redaction.
 - Source protocol and SQLite insert typing tightened so the full application passes mypy.
 - Windows and Docker Linux live-feed dry-run validation for all five new sources.
+- GDC-related article coverage through the GameDeveloper.com official RSS feed.
+- Optional source-level required-term filtering for broad official feeds.
+- A source-specific GDC fixture covering both GDC and unrelated GameDeveloper.com entries.
+- Windows and Docker Linux GDC live-feed dry-run validation with placeholder credentials.
 
 ### Changed
 
@@ -38,6 +42,9 @@
 - Default source selection now includes the five new high-signal rendering feeds.
 - Rendering keyword scoring now covers Direct3D, Shader Model, FSR/FidelityFX, upscaling, frame generation, rasterization, and common real-time effects.
 - Docker Compose now exposes `APP_ENV` and `ENABLED_SOURCES` as explicit overridable settings.
+- Default source selection now includes `gdc`, backed by configurable `GDC_FEED_URL`.
+- The GDC source keeps only entries that explicitly mention GDC or Game Developers Conference before storage and rendering scoring.
+- Rendering keyword scoring now covers real-time graphics, rendering and graphics pipelines, rendering architecture, physically based rendering, PBR, GPU optimization, occlusion culling, and Advanced Graphics Summit.
 
 ### Fixed
 

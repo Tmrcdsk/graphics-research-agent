@@ -2,11 +2,11 @@
 
 ## Project State
 
-Status: Multi-source rendering news MVP implemented, validated on Windows and Docker Linux, and running locally in Docker Desktop production mode
+Status: Multi-source rendering news MVP implemented and validated on Windows and Docker Linux. GDC-related coverage is implemented locally but has not yet been pushed or deployed to the existing VPS.
 
 ## Current Goal
 
-Broaden the validated arXiv + DeepSeek + Telegram pipeline with high-signal official rendering engineering and SIGGRAPH feeds while preserving deduplication, dry-run safety, and Docker Linux deployability.
+Track rendering-related GDC articles without scraping browser-protected GDC pages, while preserving source isolation, conservative rule filtering, dry-run safety, and Linux container deployability.
 
 ## Implemented
 
@@ -20,30 +20,35 @@ Broaden the validated arXiv + DeepSeek + Telegram pipeline with high-signal offi
 - [x] Khronos Vulkan News official feed source
 - [x] ACM SIGGRAPH Real-Time official feed source
 - [x] ACM SIGGRAPH Research official feed source
-- [x] Data-driven official feed registry and unknown-source validation
+- [x] GDC-related coverage through the GameDeveloper.com official RSS feed
+- [x] Source-level required-term filtering for broad feeds
+- [x] Data-driven feed registry and unknown-source validation
 - [x] Multi-source failure isolation
-- [x] Rendering rule filter
+- [x] Rendering rule filter with GDC graphics terminology
 - [x] DeepSeek client and schema validation
 - [x] Telegram publisher and strict dry-run behavior
 - [x] Telegram URL token log redaction
 - [x] Docker Compose scheduler runtime
 - [x] Fixture-based offline unit tests for every source
-- [x] Windows-native test validation
-- [x] Docker Linux test and live-feed dry-run validation
-- [x] Local Docker Desktop production service deployment
+- [x] Windows-native test and GDC live-feed validation
+- [x] Docker Linux test and GDC live-feed validation
 
 ## Not Implemented Yet
 
-- [ ] VPS deployment
+- [ ] Direct GDC schedule or GDC Vault ingestion
 - [ ] CI/CD or GitHub Actions
 - [ ] Docker healthcheck or external alerting
 - [ ] Per-source run status rows and metrics
-- [ ] Automatic retry of items that were stored before an LLM failure
-- [ ] Sources outside the documented official-feed scope
+- [ ] Automatic retry of items stored before an LLM failure
+- [ ] Sources outside the documented feed-based scope
 
 ## Known Issues
 
-- The running production container is local to Docker Desktop. It stops when the Windows host or Docker Desktop is unavailable and is not a VPS deployment.
+- The GDC website still links to legacy FeedBurner endpoints, but both tested endpoints return the GDC HTML homepage with zero RSS entries.
+- The official GDC schedule offers CSV and iCal exports, but server-side clients receive a Cloudflare HTTP 403 challenge. It is unsuitable for the current VPS worker without browser automation.
+- The `gdc` source therefore tracks GameDeveloper.com RSS entries that explicitly mention `GDC` or `Game Developers Conference`. It does not provide a complete mirror of the GDC schedule or Vault.
+- GameDeveloper.com publishes high-volume industry coverage. Source-level GDC filtering runs before storage, and the rendering rule filter runs afterward to control noise and DeepSeek usage.
+- Existing deployments with an explicit `ENABLED_SOURCES` value must append `gdc`; changing the code default does not override their `.env`.
 - Official feed URLs and formats can change. Every URL is configurable through its matching `*_FEED_URL` variable.
 - Direct Docker Hub access can fail on the current network. The validated build used `docker.m.daocloud.io/library/python:3.11-slim` through `PYTHON_IMAGE`.
 - `feedparser` emits a deprecation warning about its temporary `updated_parsed` fallback. Parsing behavior remains correct in current tests.
@@ -54,48 +59,51 @@ Broaden the validated arXiv + DeepSeek + Telegram pipeline with high-signal offi
 
 ## Important Decisions
 
-- Default sources are arXiv, Unreal Engine, NVIDIA, GPUOpen, DirectX, Khronos Vulkan News, SIGGRAPH Real-Time, and SIGGRAPH Research.
-- Unity was not enabled because its official feed is very large and currently dominated by advertising, business, and general product content.
+- Default sources are arXiv, Unreal Engine, NVIDIA, GPUOpen, DirectX, Khronos Vulkan News, SIGGRAPH Real-Time, SIGGRAPH Research, and GDC-related GameDeveloper.com coverage.
+- `GDC_FEED_URL` defaults to `https://www.gamedeveloper.com/rss.xml`.
+- The GDC source requires an explicit GDC marker before an item enters SQLite. The term `GDC` itself is not a rendering score signal.
+- GDC-oriented rendering signals include real-time graphics, rendering/graphics pipelines, rendering architecture, physically based rendering, GPU optimization, occlusion culling, and Advanced Graphics Summit.
+- GDC schedule HTML scraping and browser automation remain out of scope because they would be fragile and unsuitable for the lightweight VPS worker.
+- Unity was not enabled because its official feed is very large and dominated by advertising, business, and general product content during source research.
 - Khronos Blog was not enabled because it overlaps with the selected Vulkan News feed.
-- Intel graphics feeds were not enabled because the relevant official endpoint returned HTTP 403 to the project client during research.
-- New standard RSS/Atom sources reuse `NewsFeedSource`; source metadata is registered through `OFFICIAL_FEED_SPECS`.
+- Intel graphics feeds were not enabled because the relevant official endpoint returned HTTP 403 to the project client during source research.
+- New standard RSS/Atom sources reuse `NewsFeedSource`; source metadata and optional source constraints are registered through `OFFICIAL_FEED_SPECS`.
 - Unknown `ENABLED_SOURCES` values fail fast to prevent silent deployment mistakes.
-- The existing SQLite identity and migration strategy is unchanged; no database migration was required for these sources.
-- Production Telegram and DeepSeek credentials remain environment-only and are never written to tracked files.
-- Local production deployment uses `APP_ENV=production`, `DRY_RUN=false`, and the daily 09:00 Asia/Tokyo schedule.
+- No database migration or DeepSeek prompt-schema change was required for the GDC source.
+- Production Telegram and DeepSeek credentials remain environment-only and were replaced with placeholders in all smoke tests.
+- The existing long-running Compose service was not recreated during this change; all Docker validation used one-off containers with `DRY_RUN=true`.
 
 ## Recent Test Commands
 
-- `.\.venv\Scripts\python.exe -m pytest`
+- `.\.venv\Scripts\python.exe -m pytest -q`
 - `.\.venv\Scripts\python.exe -m ruff check --no-cache .`
 - `.\.venv\Scripts\python.exe -m ruff format --check --no-cache .`
 - `.\.venv\Scripts\python.exe -m mypy app`
-- Local live-feed run with explicit `DRY_RUN=true`, placeholder credentials, five new sources, and an isolated SQLite file
+- Windows GDC-only `run-once` with `ENABLED_SOURCES=gdc`, `DRY_RUN=true`, placeholder credentials, `MAX_FEED_RESULTS=50`, and an isolated SQLite file
+- `docker version --format '{{.Server.Os}}/{{.Server.Arch}} {{.Server.Version}}'`
 - `docker compose build --build-arg PYTHON_IMAGE=docker.m.daocloud.io/library/python:3.11-slim`
-- `docker compose run --rm --no-deps ... graphics-agent python -m pytest`
-- `docker compose run --rm --no-deps ... graphics-agent python -m ruff check .`
+- `docker compose run --rm --no-deps ... graphics-agent python -m pytest -q`
+- `docker compose run --rm --no-deps ... graphics-agent python -m ruff check --no-cache .`
+- `docker compose run --rm --no-deps ... graphics-agent python -m ruff format --check --no-cache .`
 - `docker compose run --rm --no-deps ... graphics-agent python -m mypy app`
-- Docker live-feed run with explicit `DRY_RUN=true`, placeholder credentials, five new sources, and `/tmp/new-sources-smoke-docker.sqlite3`
-- `docker compose up -d --force-recreate`
-- `docker compose ps`
-- `docker compose logs --no-color --tail 50 graphics-agent`
+- Docker GDC-only `run-once` with placeholder credentials, `DRY_RUN=true`, and `/tmp/gdc-live-smoke.sqlite3`
+- `docker compose config --quiet`
 
 ## Recent Test Result
 
-- Windows pytest: passed, 38 tests.
-- Windows ruff check: passed.
-- Windows ruff format check: passed.
+- Windows pytest: passed, 42 tests with 13 known `feedparser` deprecation warnings.
+- Windows Ruff lint: passed.
+- Windows Ruff format check: passed for 41 files.
 - Windows mypy: passed for 30 source files.
-- Local live-feed dry-run: passed. All five new feeds returned HTTP 200; 10 limited items were stored, 6 were rule candidates, and 2 dry-run messages were rendered without DeepSeek or Telegram network calls.
-- Docker Compose build: passed on Linux/amd64 using the configured mirror image.
-- Docker Linux pytest: passed, 38 tests on Python 3.11.15.
-- Docker Linux ruff check: passed.
+- Windows GDC live-feed dry-run: passed. RSS returned HTTP 200 with 50 entries; source constraints selected one GDC article, which scored below the rendering threshold. No DeepSeek or Telegram request was made.
+- Docker daemon: Linux/amd64, Docker 27.5.1.
+- Docker Compose build: passed using the configured mirror image.
+- Docker Linux pytest: passed, 42 tests with 13 known warnings.
+- Docker Linux Ruff lint and format checks: passed.
 - Docker Linux mypy: passed for 30 source files.
-- Docker Linux live-feed dry-run: passed with the same 10 fetched items, 6 candidates, and 2 dry-run publish-log records. No Telegram message was sent.
-- Local production deployment: passed. Container `graphics-research-agent` is running and the scheduler started for 09:00 Asia/Tokyo.
-- Runtime configuration check: `production`, `DRY_RUN=false`, and all eight sources enabled.
-- Conventional source commit created locally. The GitHub push is pending explicit authorization for `origin/main`.
+- Docker Linux GDC live-feed dry-run: passed with the same 50 parsed entries, one GDC-selected article, zero rendering candidates, and zero pushes. No DeepSeek or Telegram request was made.
+- Docker Compose configuration validation: passed.
 
 ## Next Recommended Task
 
-Push the validated local commits after explicitly authorizing `origin/main`. For a real VPS deployment, provide the VPS host, SSH user/port/key path, repository access method, and desired deployment directory; then run the documented Docker Compose deployment with the VPS production `.env`.
+Review and push the conventional commit. On the VPS, pull the new commit, append `gdc` to `ENABLED_SOURCES` in `.env`, rebuild the image, recreate the service, and inspect logs for `Fetching gdc feed` plus the selected-item count.

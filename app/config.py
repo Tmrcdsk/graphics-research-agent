@@ -35,7 +35,9 @@ class Settings(BaseSettings):
     rule_filter_threshold: int = Field(default=5, alias="RULE_FILTER_THRESHOLD")
     arxiv_categories_raw: str = Field(default="cs.GR,cs.CV,cs.LG", alias="ARXIV_CATEGORIES")
     enabled_sources_raw: str = Field(
-        default=("arxiv,unreal,nvidia,gpuopen,directx,vulkan,siggraph_realtime,siggraph_research"),
+        default=(
+            "arxiv,unreal,nvidia,gpuopen,directx,vulkan,siggraph_realtime,siggraph_research,gdc"
+        ),
         alias="ENABLED_SOURCES",
     )
     unreal_feed_url: str = Field(
@@ -65,6 +67,10 @@ class Settings(BaseSettings):
     siggraph_research_feed_url: str = Field(
         default="https://blog.siggraph.org/category/research/feed/",
         alias="SIGGRAPH_RESEARCH_FEED_URL",
+    )
+    gdc_feed_url: str = Field(
+        default="https://www.gamedeveloper.com/rss.xml",
+        alias="GDC_FEED_URL",
     )
 
     schedule_hour: int = Field(default=9, ge=0, le=23, alias="SCHEDULE_HOUR")

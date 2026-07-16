@@ -13,6 +13,7 @@ This project tracks computer graphics papers and official rendering engineering 
 - Microsoft DirectX Developer Blog official feed source
 - Khronos Vulkan News official feed source
 - ACM SIGGRAPH Real-Time and Research official feed sources
+- GDC-related technical coverage from the GameDeveloper.com official RSS feed
 - DeepSeek V4 Flash classification and summarization
 - SQLite persistence
 - Telegram publisher

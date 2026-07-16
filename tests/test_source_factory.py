@@ -9,7 +9,7 @@ from app.sources.source_factory import MultiSource, build_default_source, build_
 def test_build_sources_from_enabled_sources() -> None:
     settings = Settings(
         enabled_sources_raw=(
-            "arxiv,unreal,nvidia,gpuopen,directx,vulkan,siggraph_realtime,siggraph_research"
+            "arxiv,unreal,nvidia,gpuopen,directx,vulkan,siggraph_realtime,siggraph_research,gdc"
         ),
         dry_run=True,
     )
@@ -25,6 +25,7 @@ def test_build_sources_from_enabled_sources() -> None:
         "vulkan",
         "siggraph_realtime",
         "siggraph_research",
+        "gdc",
     ]
 
 

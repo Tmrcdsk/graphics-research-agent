@@ -13,7 +13,7 @@ services:
       APP_ENV: ${APP_ENV:-development}
       DATABASE_URL: ${DATABASE_URL:-sqlite:///./data/agent.sqlite3}
       DRY_RUN: ${DRY_RUN:-true}
-      ENABLED_SOURCES: ${ENABLED_SOURCES:-arxiv,unreal,nvidia,gpuopen,directx,vulkan,siggraph_realtime,siggraph_research}
+      ENABLED_SOURCES: ${ENABLED_SOURCES:-arxiv,unreal,nvidia,gpuopen,directx,vulkan,siggraph_realtime,siggraph_research,gdc}
     volumes:
       - ./data:/app/data
     command: ["python", "-m", "app.main", "serve"]

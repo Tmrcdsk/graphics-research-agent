@@ -2,9 +2,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import httpx
 import pytest
+import respx
 
-from app.sources.feed_source import FeedSourceConfig, parse_news_feed
+from app.config import Settings
+from app.sources.feed_source import FeedSourceConfig, NewsFeedSource, parse_news_feed
 
 
 def test_parse_news_feed_extracts_source_metadata(fixture_dir: Path) -> None:
@@ -52,15 +55,23 @@ def test_parse_news_feed_uses_default_author(fixture_dir: Path) -> None:
 
 
 @pytest.mark.parametrize(
-    ("fixture_name", "source_name", "source_label", "default_author", "title_fragment"),
+    (
+        "fixture_name",
+        "source_name",
+        "source_label",
+        "default_author",
+        "title_fragment",
+        "expected_count",
+    ),
     [
-        ("gpuopen_feed.xml", "gpuopen", "AMD GPUOpen", "AMD", "FSR Upscaling"),
+        ("gpuopen_feed.xml", "gpuopen", "AMD GPUOpen", "AMD", "FSR Upscaling", 1),
         (
             "directx_feed.xml",
             "directx",
             "DirectX Developer Blog",
             "Microsoft",
             "Shader Model",
+            1,
         ),
         (
             "vulkan_feed.xml",
@@ -68,6 +79,7 @@ def test_parse_news_feed_uses_default_author(fixture_dir: Path) -> None:
             "Khronos Vulkan News",
             "Khronos Group",
             "Vulkan Ray Tracing",
+            1,
         ),
         (
             "siggraph_realtime_feed.xml",
@@ -75,6 +87,7 @@ def test_parse_news_feed_uses_default_author(fixture_dir: Path) -> None:
             "ACM SIGGRAPH Real-Time",
             "ACM SIGGRAPH",
             "Real-Time Neural Rendering",
+            1,
         ),
         (
             "siggraph_research_feed.xml",
@@ -82,6 +95,15 @@ def test_parse_news_feed_uses_default_author(fixture_dir: Path) -> None:
             "ACM SIGGRAPH Research",
             "ACM SIGGRAPH",
             "Path Tracing",
+            1,
+        ),
+        (
+            "gdc_feed.xml",
+            "gdc",
+            "GDC via Game Developer",
+            "Game Developer",
+            "Modernizing the Rendering",
+            2,
         ),
     ],
 )
@@ -92,6 +114,7 @@ def test_parse_each_official_feed_fixture(
     source_label: str,
     default_author: str,
     title_fragment: str,
+    expected_count: int,
 ) -> None:
     config = FeedSourceConfig(
         source_name=source_name,
@@ -102,7 +125,7 @@ def test_parse_each_official_feed_fixture(
 
     items = parse_news_feed((fixture_dir / fixture_name).read_text(encoding="utf-8"), config)
 
-    assert len(items) == 1
+    assert len(items) == expected_count
     item = items[0]
     assert item.source_name == source_name
     assert item.arxiv_id.startswith(f"{source_name}:")
@@ -111,3 +134,30 @@ def test_parse_each_official_feed_fixture(
     assert item.abstract
     assert item.abs_url.startswith("https://")
     assert source_label in item.categories
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_news_feed_source_applies_required_terms_after_parsing(
+    fixture_dir: Path,
+) -> None:
+    config = FeedSourceConfig(
+        source_name="gdc",
+        source_label="GDC via Game Developer",
+        feed_url="https://www.gamedeveloper.com/rss.xml",
+        default_author="Game Developer",
+        required_any_terms=("gdc", "game developers conference"),
+    )
+    source = NewsFeedSource(Settings(max_feed_results=20, dry_run=True), config)
+    route = respx.get(config.feed_url).mock(
+        return_value=httpx.Response(
+            200,
+            text=(fixture_dir / "gdc_feed.xml").read_text(encoding="utf-8"),
+        )
+    )
+
+    items = await source.fetch_recent()
+
+    assert route.called
+    assert [item.title for item in items] == ["Modernizing the Rendering of Minecraft"]
+    assert "GDC 2026" in items[0].abstract

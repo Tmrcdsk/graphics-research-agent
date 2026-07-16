@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>gamedeveloper</title>
+    <link>https://www.gamedeveloper.com/</link>
+    <description>Game development news and technical features</description>
+    <item>
+      <title>Modernizing the Rendering of Minecraft</title>
+      <link>https://www.gamedeveloper.com/programming/modernizing-minecraft-rendering</link>
+      <guid isPermaLink="false">game-developer-gdc-rendering-1</guid>
+      <dc:creator>Game Developer Staff</dc:creator>
+      <description><![CDATA[At GDC 2026, the team describes its real-time graphics pipeline, shader architecture, and GPU optimization work.]]></description>
+      <pubDate>Mon, 09 Mar 2026 18:30:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>A Practical Guide to Studio Contract Reviews</title>
+      <link>https://www.gamedeveloper.com/production/studio-contract-reviews</link>
+      <guid isPermaLink="false">game-developer-production-2</guid>
+      <dc:creator>Game Developer Staff</dc:creator>
+      <description><![CDATA[A production guide for reviewing common studio agreements.]]></description>
+      <pubDate>Mon, 09 Mar 2026 17:00:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

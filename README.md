@@ -14,6 +14,7 @@ Implemented MVP scope:
 - Khronos Vulkan News official feed source
 - ACM SIGGRAPH Real-Time official feed source
 - ACM SIGGRAPH Research official feed source
+- GDC-related rendering coverage from the GameDeveloper.com official RSS feed
 - SQLite deduplication and publish logs
 - Rule-based first-pass filtering
 - DeepSeek-compatible structured classification and summarization
@@ -51,7 +52,7 @@ Required for live LLM and Telegram:
 
 Useful runtime settings:
 
-- `ENABLED_SOURCES=arxiv,unreal,nvidia,gpuopen,directx,vulkan,siggraph_realtime,siggraph_research`
+- `ENABLED_SOURCES=arxiv,unreal,nvidia,gpuopen,directx,vulkan,siggraph_realtime,siggraph_research,gdc`
 - `UNREAL_FEED_URL=https://www.unrealengine.com/rss`
 - `NVIDIA_FEED_URL=https://developer.nvidia.com/blog/feed/`
 - `GPUOPEN_FEED_URL=https://gpuopen.com/feed.xml`
@@ -59,6 +60,7 @@ Useful runtime settings:
 - `VULKAN_FEED_URL=https://www.khronos.org/feeds/vulkan_news_feed`
 - `SIGGRAPH_REALTIME_FEED_URL=https://blog.siggraph.org/category/realtime/feed/`
 - `SIGGRAPH_RESEARCH_FEED_URL=https://blog.siggraph.org/category/research/feed/`
+- `GDC_FEED_URL=https://www.gamedeveloper.com/rss.xml`
 - `DATABASE_URL=sqlite:///./data/agent.sqlite3`
 - `DRY_RUN=true`
 - `MAX_ARXIV_RESULTS=80`
@@ -91,6 +93,37 @@ Remove-Item Env:\DATABASE_URL -ErrorAction SilentlyContinue
 ```
 
 Unknown names in `ENABLED_SOURCES` fail fast so a misspelled source cannot be silently skipped.
+
+The `gdc` source reads the GameDeveloper.com official RSS feed, keeps only entries that explicitly
+mention GDC or Game Developers Conference, and then applies the normal rendering rule filter. The
+GDC website's legacy FeedBurner URLs no longer return RSS data, and the schedule export is protected
+by a browser challenge, so neither is used by the server-side agent.
+
+To test only GDC-related coverage without API credentials or Telegram sends:
+
+```powershell
+$env:ENABLED_SOURCES="gdc"
+$env:DATABASE_URL="sqlite:///./data/gdc-feed-smoke.sqlite3"
+$env:DRY_RUN="true"
+$env:DEEPSEEK_API_KEY="replace_me"
+$env:TELEGRAM_BOT_TOKEN="replace_me"
+$env:TELEGRAM_CHAT_ID="replace_me"
+.\.venv\Scripts\python.exe -m app.main run-once
+```
+
+Clean up the temporary overrides afterward:
+
+```powershell
+Remove-Item Env:\ENABLED_SOURCES -ErrorAction SilentlyContinue
+Remove-Item Env:\DATABASE_URL -ErrorAction SilentlyContinue
+Remove-Item Env:\DRY_RUN -ErrorAction SilentlyContinue
+Remove-Item Env:\DEEPSEEK_API_KEY -ErrorAction SilentlyContinue
+Remove-Item Env:\TELEGRAM_BOT_TOKEN -ErrorAction SilentlyContinue
+Remove-Item Env:\TELEGRAM_CHAT_ID -ErrorAction SilentlyContinue
+```
+
+Existing deployments must append `gdc` to their `.env` `ENABLED_SOURCES` value before recreating
+the Compose service.
 
 ## Tests and Linting
 
