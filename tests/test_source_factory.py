@@ -9,7 +9,8 @@ from app.sources.source_factory import MultiSource, build_default_source, build_
 def test_build_sources_from_enabled_sources() -> None:
     settings = Settings(
         enabled_sources_raw=(
-            "arxiv,unreal,nvidia,gpuopen,directx,vulkan,siggraph_realtime,siggraph_research,gdc"
+            "arxiv,unreal,nvidia,gpuopen,directx,vulkan,siggraph_realtime,"
+            "siggraph_research,gdc,gdc_vault,advances"
         ),
         dry_run=True,
     )
@@ -26,6 +27,8 @@ def test_build_sources_from_enabled_sources() -> None:
         "siggraph_realtime",
         "siggraph_research",
         "gdc",
+        "gdc_vault",
+        "advances",
     ]
 
 
@@ -39,11 +42,14 @@ def test_build_default_source_returns_multi_source_for_multiple_sources() -> Non
 
 
 def test_build_sources_deduplicates_source_aliases() -> None:
-    settings = Settings(enabled_sources_raw="epic,unreal", dry_run=True)
+    settings = Settings(
+        enabled_sources_raw="epic,unreal,advances,advances_rtr",
+        dry_run=True,
+    )
 
     sources = build_sources(settings)
 
-    assert [source.source_name for source in sources] == ["unreal"]
+    assert [source.source_name for source in sources] == ["unreal", "advances"]
 
 
 def test_build_sources_rejects_unknown_source_name() -> None:

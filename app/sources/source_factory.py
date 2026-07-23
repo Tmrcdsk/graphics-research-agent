@@ -5,8 +5,10 @@ from dataclasses import dataclass
 from typing import Protocol
 
 from app.config import Settings
+from app.sources.advances_source import AdvancesSource
 from app.sources.arxiv_source import ArxivSource
 from app.sources.feed_source import FeedSourceConfig, NewsFeedSource
+from app.sources.gdc_vault_source import GdcVaultSource
 from app.sources.models import PaperItem
 
 logger = logging.getLogger(__name__)
@@ -112,7 +114,7 @@ class MultiSource:
 def build_sources(settings: Settings) -> list[Source]:
     sources: list[Source] = []
     enabled = set(settings.enabled_sources)
-    known_names = {"arxiv"}
+    known_names = {"arxiv", "gdc_vault", "advances", "advances_rtr"}
     for spec in OFFICIAL_FEED_SPECS:
         known_names.add(spec.source_name)
         known_names.update(spec.aliases)
@@ -139,6 +141,10 @@ def build_sources(settings: Settings) -> list[Source]:
                 ),
             )
         )
+    if "gdc_vault" in enabled:
+        sources.append(GdcVaultSource(settings))
+    if enabled.intersection({"advances", "advances_rtr"}):
+        sources.append(AdvancesSource(settings))
     return sources
 
 

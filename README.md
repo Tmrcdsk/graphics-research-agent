@@ -15,6 +15,8 @@ Implemented MVP scope:
 - ACM SIGGRAPH Real-Time official feed source
 - ACM SIGGRAPH Research official feed source
 - GDC-related rendering coverage from the GameDeveloper.com official RSS feed
+- GDC Vault annual conference catalog source
+- Advances in Real-Time Rendering in Games annual course source
 - SQLite deduplication and publish logs
 - Rule-based first-pass filtering
 - DeepSeek-compatible structured classification and summarization
@@ -24,7 +26,7 @@ Implemented MVP scope:
 - Docker Compose runtime
 - Fixture-based tests without real external API calls
 
-Out of scope for MVP: Feishu, RSSHub, X/Twitter, Reddit, Semantic Scholar, Crossref, GitHub repo discovery, PDF full-text parsing, web dashboard, and VPS automation.
+Out of scope for MVP: Feishu, RSSHub, X/Twitter, Reddit, Semantic Scholar, Crossref, GitHub repo discovery, PDF full-text parsing, arbitrary web scraping, web dashboard, and VPS automation.
 
 ## Windows PowerShell Setup
 
@@ -52,7 +54,7 @@ Required for live LLM and Telegram:
 
 Useful runtime settings:
 
-- `ENABLED_SOURCES=arxiv,unreal,nvidia,gpuopen,directx,vulkan,siggraph_realtime,siggraph_research,gdc`
+- `ENABLED_SOURCES=arxiv,unreal,nvidia,gpuopen,directx,vulkan,siggraph_realtime,siggraph_research,gdc,gdc_vault,advances`
 - `UNREAL_FEED_URL=https://www.unrealengine.com/rss`
 - `NVIDIA_FEED_URL=https://developer.nvidia.com/blog/feed/`
 - `GPUOPEN_FEED_URL=https://gpuopen.com/feed.xml`
@@ -61,6 +63,10 @@ Useful runtime settings:
 - `SIGGRAPH_REALTIME_FEED_URL=https://blog.siggraph.org/category/realtime/feed/`
 - `SIGGRAPH_RESEARCH_FEED_URL=https://blog.siggraph.org/category/research/feed/`
 - `GDC_FEED_URL=https://www.gamedeveloper.com/rss.xml`
+- `GDC_VAULT_BASE_URL=https://gdcvault.com`
+- `GDC_VAULT_YEARS=` (empty means the current and previous years)
+- `ADVANCES_BASE_URL=https://advances.realtimerendering.com`
+- `ADVANCES_YEARS=` (empty means the current and previous years)
 - `DATABASE_URL=sqlite:///./data/agent.sqlite3`
 - `DRY_RUN=true`
 - `MAX_ARXIV_RESULTS=80`
@@ -99,6 +105,15 @@ mention GDC or Game Developers Conference, and then applies the normal rendering
 GDC website's legacy FeedBurner URLs no longer return RSS data, and the schedule export is protected
 by a browser challenge, so neither is used by the server-side agent.
 
+The `gdc_vault` source reads the official annual Vault catalog. It deduplicates slide/video variants,
+prefilters rendering-related titles, and requests details only for candidates. Because the catalog
+does not expose exact publication dates, stored items use January 1 of the conference year with
+year-level date precision in raw metadata.
+
+The `advances` source reads the official annual Advances in Real-Time Rendering in Games course page.
+Each anchored talk becomes an item, including its abstract and PDF/PPT links when available. Both
+catalog sources default to the current and previous years.
+
 To test only GDC-related coverage without API credentials or Telegram sends:
 
 ```powershell
@@ -122,8 +137,33 @@ Remove-Item Env:\TELEGRAM_BOT_TOKEN -ErrorAction SilentlyContinue
 Remove-Item Env:\TELEGRAM_CHAT_ID -ErrorAction SilentlyContinue
 ```
 
-Existing deployments must append `gdc` to their `.env` `ENABLED_SOURCES` value before recreating
-the Compose service.
+To smoke-test only the two official catalog sources:
+
+```powershell
+$env:PYTHONUTF8="1"
+$env:ENABLED_SOURCES="gdc_vault,advances"
+$env:DATABASE_URL="sqlite:///./data/catalog-smoke.sqlite3"
+$env:DRY_RUN="true"
+$env:DEEPSEEK_API_KEY="replace_me"
+$env:TELEGRAM_BOT_TOKEN="replace_me"
+$env:TELEGRAM_CHAT_ID="replace_me"
+.\.venv\Scripts\python.exe -m app.main run-once
+```
+
+Remove the temporary catalog-smoke overrides afterward:
+
+```powershell
+Remove-Item Env:\PYTHONUTF8 -ErrorAction SilentlyContinue
+Remove-Item Env:\ENABLED_SOURCES -ErrorAction SilentlyContinue
+Remove-Item Env:\DATABASE_URL -ErrorAction SilentlyContinue
+Remove-Item Env:\DRY_RUN -ErrorAction SilentlyContinue
+Remove-Item Env:\DEEPSEEK_API_KEY -ErrorAction SilentlyContinue
+Remove-Item Env:\TELEGRAM_BOT_TOKEN -ErrorAction SilentlyContinue
+Remove-Item Env:\TELEGRAM_CHAT_ID -ErrorAction SilentlyContinue
+```
+
+Existing deployments with an explicit `ENABLED_SOURCES` value must append
+`gdc,gdc_vault,advances` as needed before recreating the Compose service.
 
 ## Tests and Linting
 

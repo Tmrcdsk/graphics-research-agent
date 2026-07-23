@@ -100,7 +100,7 @@ def _contains_keyword(text: str, keyword: str) -> bool:
 
 
 def score_paper(paper: PaperItem, threshold: int = 5) -> RuleFilterResult:
-    text = f"{paper.title}\n{paper.abstract}".casefold()
+    text = f"{paper.title}\n{paper.abstract}\n{' '.join(paper.categories)}".casefold()
     score = 0
     positive_matches: list[str] = []
     negative_matches: list[str] = []

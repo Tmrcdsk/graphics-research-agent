@@ -14,6 +14,8 @@ This project tracks computer graphics papers and official rendering engineering 
 - Khronos Vulkan News official feed source
 - ACM SIGGRAPH Real-Time and Research official feed sources
 - GDC-related technical coverage from the GameDeveloper.com official RSS feed
+- GDC Vault annual conference catalog source
+- Advances in Real-Time Rendering in Games annual course source
 - DeepSeek V4 Flash classification and summarization
 - SQLite persistence
 - Telegram publisher
@@ -31,7 +33,7 @@ This project tracks computer graphics papers and official rendering engineering 
 - GitHub discovery
 - Semantic Scholar
 - Web dashboard
-- Scraping pages without an official feed
+- Scraping arbitrary pages without an official feed or an explicitly allowlisted official catalog parser
 
 ## Hard Rules for AI Agents
 

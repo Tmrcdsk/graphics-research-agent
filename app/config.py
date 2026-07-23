@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from functools import lru_cache
 from pathlib import Path
 
@@ -36,7 +37,8 @@ class Settings(BaseSettings):
     arxiv_categories_raw: str = Field(default="cs.GR,cs.CV,cs.LG", alias="ARXIV_CATEGORIES")
     enabled_sources_raw: str = Field(
         default=(
-            "arxiv,unreal,nvidia,gpuopen,directx,vulkan,siggraph_realtime,siggraph_research,gdc"
+            "arxiv,unreal,nvidia,gpuopen,directx,vulkan,siggraph_realtime,"
+            "siggraph_research,gdc,gdc_vault,advances"
         ),
         alias="ENABLED_SOURCES",
     )
@@ -72,6 +74,16 @@ class Settings(BaseSettings):
         default="https://www.gamedeveloper.com/rss.xml",
         alias="GDC_FEED_URL",
     )
+    gdc_vault_base_url: str = Field(
+        default="https://gdcvault.com",
+        alias="GDC_VAULT_BASE_URL",
+    )
+    gdc_vault_years_raw: str = Field(default="", alias="GDC_VAULT_YEARS")
+    advances_base_url: str = Field(
+        default="https://advances.realtimerendering.com",
+        alias="ADVANCES_BASE_URL",
+    )
+    advances_years_raw: str = Field(default="", alias="ADVANCES_YEARS")
 
     schedule_hour: int = Field(default=9, ge=0, le=23, alias="SCHEDULE_HOUR")
     schedule_minute: int = Field(default=0, ge=0, le=59, alias="SCHEDULE_MINUTE")
@@ -89,7 +101,7 @@ class Settings(BaseSettings):
             return None
         return stripped
 
-    @field_validator("deepseek_base_url")
+    @field_validator("deepseek_base_url", "gdc_vault_base_url", "advances_base_url")
     @classmethod
     def trim_base_url(cls, value: str) -> str:
         return value.rstrip("/")
@@ -103,6 +115,40 @@ class Settings(BaseSettings):
         return [
             item.strip().casefold() for item in self.enabled_sources_raw.split(",") if item.strip()
         ]
+
+    @property
+    def gdc_vault_years(self) -> list[int]:
+        return self._parse_catalog_years(self.gdc_vault_years_raw, "GDC_VAULT_YEARS")
+
+    @property
+    def advances_years(self) -> list[int]:
+        return self._parse_catalog_years(self.advances_years_raw, "ADVANCES_YEARS")
+
+    @staticmethod
+    def _parse_catalog_years(raw_value: str, setting_name: str) -> list[int]:
+        current_year = datetime.now(UTC).year
+        if not raw_value.strip():
+            return [current_year, current_year - 1]
+
+        years: list[int] = []
+        for value in raw_value.split(","):
+            stripped = value.strip()
+            if not stripped:
+                continue
+            try:
+                year = int(stripped)
+            except ValueError as exc:
+                raise ValueError(f"{setting_name} must contain comma-separated years") from exc
+            if not 2000 <= year <= current_year + 1:
+                raise ValueError(
+                    f"{setting_name} year {year} is outside the supported range "
+                    f"2000-{current_year + 1}"
+                )
+            if year not in years:
+                years.append(year)
+        if not years:
+            raise ValueError(f"{setting_name} must contain at least one year")
+        return years
 
     @property
     def database_path(self) -> Path:

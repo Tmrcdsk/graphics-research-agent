@@ -5,7 +5,7 @@
 The MVP pipeline is:
 
 ```text
-arXiv / official rendering RSS feeds
+arXiv / official rendering feeds / allowlisted official catalogs
   -> parse/normalize
   -> SQLite dedupe
   -> rule filter
@@ -25,6 +25,8 @@ Current sources:
 
 - `ArxivSource`: fetches Atom XML from the arXiv API.
 - `NewsFeedSource`: fetches official RSS/Atom feeds for Unreal Engine, NVIDIA, AMD GPUOpen, DirectX, Khronos Vulkan News, ACM SIGGRAPH categories, and GDC-related GameDeveloper.com coverage.
+- `GdcVaultSource`: fetches current and previous GDC Vault annual catalogs, deduplicates media variants, filters catalog titles for rendering signals, and fetches detail pages only for selected sessions.
+- `AdvancesSource`: fetches current and previous Advances in Real-Time Rendering course pages and emits one item per talk with available abstract and presentation links.
 - `MultiSource`: combines enabled sources and isolates source-level failures.
 - `OFFICIAL_FEED_SPECS`: data-driven registry that maps source names to configurable URLs and labels. Unknown configured source names fail before fetching.
 
@@ -33,7 +35,20 @@ only RSS entries that explicitly mention `GDC` or `Game Developers Conference` b
 and rendering relevance scoring. This prevents unrelated GameDeveloper.com industry news from
 entering the pipeline.
 
-Unit tests call parser functions directly with fixture XML.
+GDC Vault exposes no exact publication date in its annual catalog. Items therefore use January 1 of
+the conference year and record `date_precision=year` in raw metadata. Slides and video variants of
+the same title are deduplicated with slides preferred.
+
+Advances course pages use a stable `sYYYY/index.html` layout. A talk is accepted only when its named
+anchor has an abstract or downloadable material. The course date is parsed when available; otherwise
+August 1 of the page year is used. Its course category is included in rule scoring, so curated talks
+reach DeepSeek classification without changing the source abstract.
+
+The catalog sources use a shared text decoder. Explicit HTTP charsets are honored; otherwise UTF-8
+is attempted first with a Windows-1252 fallback for legacy conference pages.
+
+Unit tests call parser functions directly with fixture XML or HTML. Network access is mocked in all
+source tests.
 
 ## Item Model
 

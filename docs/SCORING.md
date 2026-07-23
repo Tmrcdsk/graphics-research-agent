@@ -1,6 +1,7 @@
 # Scoring
 
-The MVP uses a conservative keyword score before calling DeepSeek. Papers below `RULE_FILTER_THRESHOLD` are stored in SQLite but not summarized.
+The MVP uses a conservative keyword score across the title, abstract, and source categories before
+calling DeepSeek. Items below `RULE_FILTER_THRESHOLD` are stored in SQLite but not summarized.
 
 ## Positive Keywords
 

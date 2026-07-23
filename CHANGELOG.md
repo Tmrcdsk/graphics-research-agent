@@ -27,6 +27,14 @@
 - Optional source-level required-term filtering for broad official feeds.
 - A source-specific GDC fixture covering both GDC and unrelated GameDeveloper.com entries.
 - Windows and Docker Linux GDC live-feed dry-run validation with placeholder credentials.
+- GDC Vault annual catalog ingestion with rendering-title prefiltering, media-variant deduplication,
+  and candidate detail enrichment.
+- Advances in Real-Time Rendering in Games annual course ingestion with per-talk abstracts and
+  downloadable presentation metadata.
+- Fixture and mocked-network coverage for both catalog sources, annual year configuration, and
+  legacy page text decoding.
+- Windows and Docker Linux live dry-run validation against the official GDC Vault and Advances
+  websites.
 
 ### Changed
 
@@ -45,6 +53,11 @@
 - Default source selection now includes `gdc`, backed by configurable `GDC_FEED_URL`.
 - The GDC source keeps only entries that explicitly mention GDC or Game Developers Conference before storage and rendering scoring.
 - Rendering keyword scoring now covers real-time graphics, rendering and graphics pipelines, rendering architecture, physically based rendering, PBR, GPU optimization, occlusion culling, and Advanced Graphics Summit.
+- Default source selection now includes `gdc_vault` and `advances`.
+- Catalog year lists are configurable through `GDC_VAULT_YEARS` and `ADVANCES_YEARS`; empty values
+  select the current and previous calendar years.
+- Rule filtering now includes source categories in addition to titles and abstracts, allowing
+  curated Advances course talks to reach DeepSeek without modifying source abstracts.
 
 ### Fixed
 
@@ -55,6 +68,8 @@
 - Feed titles are stripped of HTML before storage and Telegram rendering.
 - Telegram Bot Tokens embedded in `httpx.URL` log arguments are now redacted before formatting.
 - A failed source no longer makes a multi-source run fail when another source completed successfully with zero items.
+- Legacy HTML responses without an explicit charset now fall back to Windows-1252 when strict UTF-8
+  decoding fails, preserving punctuation on the Advances course site.
 
 ### Removed
 
